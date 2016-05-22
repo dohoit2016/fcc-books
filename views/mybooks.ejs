@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title><%= title %></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<% include header %>
+	</head>
+	</head>
+	<body>
+		<div class="col-xs-12 col-sm-12 col-md-8 col-lg-8 col-lg-offset-2 col-md-offset-2">
+		<% include nav %>
+		</div>
+		<div id="react" class="col-xs-12 col-sm-12 col-md-8 col-lg-8 col-lg-offset-2 col-md-offset-2">
+		
+		</div>
+
+		<div class="col-xs-12 col-sm-12 col-md-8 col-lg-8 col-lg-offset-2 col-md-offset-2">
+		<ul class="list-group">
+		<% for (var i = 0; i < books.length; i++) { %>
+			<li class="list-group-item">
+				<img src="<%= books[i].thumbnail %>" class="img-responsive" />
+				<span><%= books[i].title %></span>
+			</li>
+		<% } %>
+		</ul>
+
+		<script type="text/babel">
+			function ob (x) {
+				return document.getElementById(x);
+			}
+
+			var testBooks = [{thumbnail: 'http://books.google.com.vn/books/content?id=LpVCAwAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api', title: 'Code Complete'}]
+
+			var Book = React.createClass({
+				render(){
+					return (
+						<a className="list-group-item" onClick={this.handleAddBook.bind(this, this.props.book.googleBookId)} href="#">
+							<img src={this.props.book.thumbnail} class="img-responsive" />
+							<span>{this.props.book.title}</span>
+						</a>
+					)
+				},
+				handleAddBook(googleBookId){
+					$.ajax({
+						url: '/api/add',
+						type: 'POST',
+						data: {
+							googleBookId: googleBookId
+						},
+						success: function (data) {
+							console.log(data);
+							window.location.reload();
+						},
+						error: function (err) {
+							console.log(err);
+						}
+					})
+				}
+			});
+
+			var BookList = React.createClass({
+				render: function() {
+					var books = this.props.books.map(function (val) {
+						return (
+							<Book book={val} key={val.googleBookId}/>
+						)
+					})
+					return (
+						<div className="list-group">
+							{books}
+						</div>
+					);
+				}
+			});
+
+			var SearchForm = React.createClass({
+				render(){
+					return (
+						<div className="form-group">
+							<input type="text" id="titleSearch" className="form-control" placeholder="Add Book" />
+							<button type="button" className="btn btn-micro btn-primary" onClick={this.props.onUserSearch}>Search</button>
+						</div>
+					)
+				}
+			});
+
+			var App = React.createClass({
+				getInitialState(){
+					return {
+						books: []
+					}
+				},
+				render: function() {
+					return (
+						<div className="container-fluid">
+							<SearchForm onUserSearch={this.handleSearch} />
+							<BookList books={this.state.books} />
+						</div>
+					);
+				},
+				handleSearch(){
+					$.ajax({
+						url: '/api/search',
+						type: 'POST',
+						data: {title: ob('titleSearch').value},
+						success: function (data) {
+							if (data.status == 'OK'){
+								this.setState({
+									books: data.data
+								});
+							}
+						}.bind(this),
+						error: function (err) {
+							console.log(err);
+						}
+					})
+				}
+			});
+
+			ReactDOM.render(<App />, ob('react'));
+		</script>
+	</body>
+</html>

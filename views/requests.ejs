@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title><%= title %></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<% include header %>
+	</head>
+	</head>
+	<body>
+		<div class="col-xs-12 col-sm-12 col-md-8 col-lg-8 col-lg-offset-2 col-md-offset-2">
+		<% include nav %>
+		</div>
+		<div class="col-xs-12 col-sm-12 col-md-8 col-lg-8 col-lg-offset-2 col-md-offset-2">
+		<div class="well"><h1>Your outgoing requests:</h1>
+		<ul class="list-group" id="outgoing-requests"></ul></div>
+		<div class="well"><h1>Your trade request was approved:</h1>
+		<ul class="list-group" id="approved-outgoing-requests"></ul></div>
+		<div class="well"><h1>Your incoming requests:</h1>
+		<ul class="list-group" id="incoming-requests"></ul></div>
+		<div class="well"><h1>Requests you've approved:</h1>
+		<ul class="list-group" id="approved-incoming-requests"></ul></div>
+		<script>
+			function ob (x) {
+				return document.getElementById(x);
+			}
+
+			function dce (x) {
+				return document.createElement(x);
+			}
+
+			function cancelRequest (tradeId) {
+				$.ajax({
+					url: '/api/trade/cancel',
+					type: 'POST',
+					data: {tradeId: tradeId},
+					success: function (data) {
+						window.location.reload();
+					},
+					error: function (err) {
+						console.log(err);
+					}
+				})
+			}
+
+			function acceptRequest (tradeId) {
+				$.ajax({
+					url: '/api/trade/accept',
+					type: 'POST',
+					data: {tradeId: tradeId},
+					success: function (data) {
+						window.location.reload();
+					},
+					error: function (err) {
+						console.log(err);
+					}
+				})
+			}
+
+			function denyRequest (tradeId) {
+				$.ajax({
+					url: '/api/trade/deny',
+					type: 'POST',
+					data: {tradeId: tradeId},
+					success: function (data) {
+						window.location.reload();
+					},
+					error: function (err) {
+						console.log(err);
+					}
+				})
+			}
+
+			function renderPage () {
+				$.ajax({
+					url: '/api/trade/get/incoming',
+					type: 'POST',
+					success: function (data) {
+						data = data.data;
+						console.log(data);
+						for (var i = 0; i < data.length; i++) {
+							var al = dce('div');
+							$(al).addClass('alert');
+							$(al).text(data[i].bookTitle);
+							var li = dce('li');
+							$(li).addClass('list-group-item');
+							var a = dce('a');
+							$(a).attr('href', '#');
+							$(a).addClass('close');
+							$(a).attr('data-dismiss', 'alert');
+							$(a).attr('aria-label', 'close');
+							$(a).html('<span class="glyphicon glyphicon-remove"></span>');
+							$(a).click(denyRequest.bind(this, data[i]._id));
+							$(a).appendTo($(li));
+							var v = $(a).clone();
+							$(v).click(acceptRequest.bind(this, data[i]._id));
+							$(v).html('<span class="glyphicon glyphicon-ok"></span>').appendTo($(li));
+							$(al).appendTo($(li));
+							if (data[i].processed == 0){
+								$(al).addClass('alert-info');
+								$(li).appendTo($(ob('incoming-requests')));
+							}
+							else {
+								$(al).addClass('alert-success');
+								$(li).appendTo($(ob('approved-incoming-requests')));
+							}
+						};
+					},
+					error: function (err) {
+						console.log(err);
+					}
+				});
+
+				$.ajax({
+					url: '/api/trade/get/outgoing',
+					type: 'POST',
+					success: function (data) {
+						data = data.data;
+						console.log(data);
+						for (var i = 0; i < data.length; i++) {
+							var al = dce('div');
+							$(al).addClass('alert');
+							$(al).text(data[i].bookTitle);
+							var li = dce('li');
+							$(li).addClass('list-group-item');
+							var a = dce('a');
+							$(a).attr('href', '#');
+							$(a).addClass('close');
+							$(a).attr('data-dismiss', 'alert');
+							$(a).attr('aria-label', 'close');
+							$(a).html('<span class="glyphicon glyphicon-remove"></span>');
+							$(a).click(cancelRequest.bind(this, data[i]._id));
+							$(a).appendTo($(li));
+							$(al).appendTo($(li));
+							if (data[i].processed == 0){
+								$(al).addClass('alert-info');
+								$(li).appendTo($(ob('outgoing-requests')));
+							}
+							else {
+								$(al).addClass('alert-success');
+								$(li).appendTo($(ob('approved-outgoing-requests')));
+							}
+						};
+					},
+					error: function (err) {
+						console.log(err);
+					}
+				})
+			}
+
+			renderPage();
+		</script>
+		</div>
+	</body>
+</html>
