@@ -24,10 +24,15 @@
 			var Book = React.createClass({
 				render(){
 					return (
-						<a className="list-group-item" onClick={this.handleAddRequest.bind(this, this.props.book._id, this.props.userId, this.props.book.title)} href="#">
-							<img src={this.props.book.thumbnail} className="img-responsive" />
-							<span>{this.props.book.title}</span>
-						</a>
+						<div className="col-md-3 col-sm-4 book">
+							<div className="col-md-12 col text-center">
+								<img className="img-responsive" src={this.props.book.thumbnail} />
+							</div>
+							
+							<div className="col-md-12">
+								<button className="btn btn-primary btn-block" onClick={this.handleAddRequest.bind(this, this.props.book._id, this.props.userId, this.props.book.title)}>Trade</button>
+							</div>
+						</div>
 					)
 				},
 				handleAddRequest(bookId, userId, title){
@@ -63,7 +68,7 @@
 						}))
 					}
 					return (
-						<div className="list-group">
+						<div className="row text-center">
 							{books}
 						</div>
 					);

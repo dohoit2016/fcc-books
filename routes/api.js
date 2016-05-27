@@ -90,6 +90,33 @@ router.post('/search', function (req, res, next) {
 	})
 })
 
+router.get('/delete/:bookId', isLoggedIn, function (req, res, next) {
+	var bookId = req.params.bookId;
+	User.findById(req.user.id, function (err, user) {
+		if (err || !user){
+			console.log('err');
+			res.redirect('/book/mybooks');
+			return;
+		}
+		if (user){
+			var books = user.books;
+			for (var i = 0; i < books.length; i++) {
+				var book = books[i];
+				if (bookId == book._id){
+					user.books.splice(i, 1);
+					user.save(function (err) {
+						if (err){
+							console.log(err);
+						}
+						res.redirect('/book/mybooks');
+					})
+					return;
+				}
+			}
+		}
+	})
+})
+
 router.get('/getall', function (req, res, next) {
 	var books = [];
 	User.find({}, function (err, users) {
@@ -99,9 +126,16 @@ router.get('/getall', function (req, res, next) {
 		// for (var i = 0; i < users.length; i++) {
 		// 	books.push({user: users[i]});
 		// }
+		var result = [];
+		for (var i = 0; i < users.length; i++) {
+			var u = {}
+			u.books = users[i].books;
+			u._id = users[i]._id;
+			result.push(u);
+		}
 		return res.json({
 			status: "OK",
-			data: users
+			data: result
 		})
 	})
 })

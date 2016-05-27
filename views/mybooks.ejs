@@ -13,16 +13,27 @@
 		<div id="react" class="col-xs-12 col-sm-12 col-md-8 col-lg-8 col-lg-offset-2 col-md-offset-2">
 		
 		</div>
-
 		<div class="col-xs-12 col-sm-12 col-md-8 col-lg-8 col-lg-offset-2 col-md-offset-2">
-		<ul class="list-group">
-		<% for (var i = 0; i < books.length; i++) { %>
-			<li class="list-group-item">
-				<img src="<%= books[i].thumbnail %>" class="img-responsive" />
-				<span><%= books[i].title %></span>
-			</li>
-		<% } %>
-		</ul>
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-bottom: 30px">
+				<h2>My Books</h2>
+			</div>
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+				<% for (var i = 0; i < books.length; i++) { %>
+					<div class="col-md-3 col-sm-4 book">
+						<div class="col-md-12 text-center" style="margin-bottom: 20px">
+							<span class="text-center"><%= books[i].title %></span>
+						</div>
+						<div class="col-md-12 col text-center">
+							<img class="img-responsive" src="<%= books[i].thumbnail %>" />
+						</div>
+						<div class="col-md-12 col text-center btn-block">
+							<a class="btn btn-danger btn-block" href="/api/delete/<%= books[i]._id %>">Delete</a>
+						</div>
+					</div>
+				<% } %>
+			</div>
+			
+		</div>
 
 		<script type="text/babel">
 			function ob (x) {
@@ -34,10 +45,15 @@
 			var Book = React.createClass({
 				render(){
 					return (
-						<a className="list-group-item" onClick={this.handleAddBook.bind(this, this.props.book.googleBookId)} href="#">
-							<img src={this.props.book.thumbnail} class="img-responsive" />
-							<span>{this.props.book.title}</span>
-						</a>
+						<div className="col-md-3 col-sm-4 book">
+							<div className="col-md-12 col text-center">
+								<img className="img-responsive" src={this.props.book.thumbnail} />
+							</div>
+							
+							<div className="col-md-12">
+								<button className="btn btn-primary btn-block" onClick={this.handleAddBook.bind(this, this.props.book.googleBookId)}>Add</button>
+							</div>
+						</div>
 					)
 				},
 				handleAddBook(googleBookId){
@@ -66,7 +82,7 @@
 						)
 					})
 					return (
-						<div className="list-group">
+						<div className="row text-center">
 							{books}
 						</div>
 					);

@@ -10,3 +10,17 @@ a {
 #react li{
 	cursor: pointer;
 }
+
+.book{
+	border-radius: 10px;
+	height: 320px;
+	margin: -5px;
+}
+
+img{
+	margin: auto auto;
+}
+
+button{
+	margin-top: 10px;
+}
